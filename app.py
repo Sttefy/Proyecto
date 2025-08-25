@@ -1,13 +1,13 @@
 # rutas en flask
-from flask import Flask
+from flask import Flask, render_template
 
 app = Flask(__name__)
 @app.route('/')
 def index():
-    return "_Hola mundo!"
+    return render_template('index.html', title="Página Principal")
 @app.route('/about')
 def about():
-    return "Acerca de nosotros"  
+    return render_template('about.html', title="Acerca de")  
 @app.route('/usuario/<nombre>')
 def usuario(nombre):
     return f'Bienvenido, {nombre}!'

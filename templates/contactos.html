@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Página Principal{% endblock %}
+
+{% block content %}
+  <h1>Bienvenido a Mi Sitio Flask</h1>
+  <p>Puedes contactarnos a travez del ingreso del formulario:</p>
+    <form method="post" action="{{ url_for('contactos') }}">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
+        <br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <br>
+        <label for="mensaje">Mensaje:</label>
+        <textarea id="mensaje" name="mensaje" required></textarea>
+        <br>
+        <button type="submit">Enviar</button>
+        {% endblock %}
