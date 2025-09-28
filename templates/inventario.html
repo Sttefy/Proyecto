@@ -1,0 +1,26 @@
+<h1>{{ Inventario }}</h1>
+
+{% if productos %}
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for p in productos %}
+        <tr>
+            <td>{{ p.nombre }}</td>
+            <td>{{ p.categoria.nombre }}</td>
+            <td>{{ p.cantidad }}</td>
+            <td>{{ p.precio }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No hay productos en el inventario.</p>
+{% endif %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Platos{% endblock %}
+
+{% block content %}
+<h1>Menú de Platos</h1>
+
+<form method="get" action="{{ url_for('buscar_platos') }}" class="form-inline mb-3">
+  <input type="text" name="q" placeholder="Buscar plato..." value="{{ q or '' }}">
+  <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+
+<a href="{{ url_for('carta') }}" class="btn btn-info mb-3">Ver Carta</a>
+
+{% if platos %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Precio</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in platos %}
+    <tr>
+      <td>{{ p.id }}</td>
+      <td>{{ p.nombre }}</td>
+      <td>${{ '%.2f'|format(p.precio) }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No hay platos registrados.</p>
+{% endif %}
+{% endblock %}

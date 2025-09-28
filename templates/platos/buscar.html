@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Buscar Plato{% endblock %}
+
+{% block content %}
+  <h1>Buscar Plato</h1>
+
+  <form method="get" action="{{ url_for('buscar_platos') }}" class="form-card">
+    <div class="form-group">
+      <label for="nombre">Nombre del plato:</label>
+      <input type="text" name="nombre" id="nombre" class="input" placeholder="Ej. Ceviche" required>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Buscar</button>
+      <a href="{{ url_for('listar_platos') }}" class="btn btn-secondary">Volver</a>
+    </div>
+  </form>
+
+  {% if resultados %}
+    <h2>Resultados</h2>
+    <ul>
+      {% for plato in resultados %}
+        <li>{{ plato.nombre }} - {{ plato.precio }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endblock %}

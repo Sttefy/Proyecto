@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Página Principal{% endblock %}
+{% block title %}Contactos{% endblock %}
 
 {% block content %}
-  <h1>Bienvenido a Mi Sitio Flask</h1>
+  <h1>Contactanos</h1>
   <p>Puedes contactarnos a travez del ingreso del formulario:</p>
-    <form method="post" action="{{ url_for('contactos') }}">
+  <form action="contactos.html"> 
         <label for="nombre">Nombre:</label>
         <input type="text" id="nombre" name="nombre" required>
         <br>
@@ -15,4 +15,5 @@
         <textarea id="mensaje" name="mensaje" required></textarea>
         <br>
         <button type="submit">Enviar</button>
+  </form>
         {% endblock %}
