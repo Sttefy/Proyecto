@@ -9,20 +9,20 @@
   {{ form.hidden_tag() }}
 
   <div class="form-group">
-    <label>{{ form.nombre.label }}</label>
-    {{ form.nombre(class="input") }}
+    <label class="form-label">{{ form.nombre.label }}</label>
+    {{ form.nombre(class="form-input") }}
     {% for e in form.nombre.errors %}<small class="error">{{ e }}</small>{% endfor %}
   </div>
 
   <div class="form-group">
-    <label>{{ form.cantidad.label }}</label>
-    {{ form.cantidad(class="input") }}
+    <label class="form-label">{{ form.cantidad.label }}</label>
+    {{ form.cantidad(class="form-input") }}
     {% for e in form.cantidad.errors %}<small class="error">{{ e }}</small>{% endfor %}
   </div>
 
   <div class="form-group">
-    <label>{{ form.precio.label }}</label>
-    {{ form.precio(class="input") }}
+    <label class="form-label">{{ form.precio.label }}</label>
+    {{ form.precio(class="form-input") }}
     {% for e in form.precio.errors %}<small class="error">{{ e }}</small>{% endfor %}
   </div>
 

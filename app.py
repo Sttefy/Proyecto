@@ -1,13 +1,24 @@
 # app.py sin sqlalchemy , s eva a conectyar a mysql.connector cia conexion/conexion.py
-from flask import Flask, render_template, request, redirect, url_for, flash, session
-from conexion.conexion import conexion, cerrar_conexion
 from forms import ProductoForm
-from datetime import datetime
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from conexion.conexion import conexion, cerrar_conexion 
+from forms import ProductoForm 
+from datetime import datetime 
 from werkzeug.security import generate_password_hash, check_password_hash
-from conexion.conexion import conexion
+from functools import wraps
+from flask import session, redirect, url_for, flash
 
 app = Flask(__name__)
 app.config['SECRET_KEY']= 'dev-secret-key'  # en producción usa variable de entorno
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "usuario" not in session:
+            flash("⚠️ Debes iniciar sesión primero.", "warning")
+            return redirect(url_for("iniciar_sesion"))
+        return f(*args, **kwargs)
+    return decorated_function
 
 # Inyectar "now" para usar {{ now().year }} en templates si quieres
 @app.context_processor
@@ -28,67 +39,72 @@ def about():
     return render_template('about.html', title='Acerca de')
 
 # ---------- REGISTRO ----------
-@app.route("/registrarse", methods=["GET", "POST"])
-def registrarse():
-    if request.method == "POST":
-        usuario = request.form["usuario"]
-        correo = request.form["correo"]
-        password = request.form["password"]
-
-        conn = conexion()
-        cursor = conn.cursor(dictionary=True)
-
-        # Verificar si ya existe usuario o correo
-        cursor.execute("SELECT * FROM usuarios WHERE usuario=%s OR correo=%s", (usuario, correo))
-        existente = cursor.fetchone()
-
-        if existente:
-            flash("⚠️ El usuario o correo ya existen. Intenta con otros.", "danger")
-            cursor.close()
-            conn.close()
-            return redirect(url_for("registrarse"))
-
-        # Guardar usuario con contraseña encriptada
-        hash_pass = generate_password_hash(password)
+@app.route("/registrarse", methods=["GET", "POST"]) 
+def registrarse(): 
+    if request.method == "POST": 
+        usuario = request.form["usuario"] 
+        correo = request.form["correo"] 
+        password = request.form["password"] 
+        
+        conn = conexion() 
+        cursor = conn.cursor(dictionary=True)  
+        
+        cursor.execute("SELECT * FROM usuarios WHERE usuario=%s OR correo=%s", (usuario, correo)) 
+        existente = cursor.fetchone() 
+        
+        if existente: 
+            flash("⚠️ El usuario o correo ya existen. Intenta con otros.", "danger") 
+            cursor.close() 
+            conn.close() 
+            
+            return redirect(url_for("registrarse")) 
+        
+        # Guardar usuario con contraseña encriptada 
+        hash_pass = generate_password_hash(password) 
         cursor.execute("INSERT INTO usuarios (usuario, correo, password) VALUES (%s, %s, %s)", 
-                       (usuario, correo, hash_pass))
-        conn.commit()
-
-        cursor.close()
-        conn.close()
-
-        flash("✅ Usuario registrado con éxito. Ahora puedes iniciar sesión.", "success")
-        return redirect(url_for("iniciar_sesion"))
-
+                       (usuario, correo, hash_pass)) 
+        conn.commit() 
+        cursor.close() 
+        conn.close() 
+        
+        flash("✅ Usuario registrado con éxito. Ahora puedes iniciar sesión.", "success") 
+        return redirect(url_for("iniciar_sesion")) 
+    
     return render_template("registrarse.html")
 
-
 # ---------- LOGIN ----------
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/iniciar_sesion", methods=["GET", "POST"])
 def iniciar_sesion():
     if request.method == "POST":
-        usuario = request.form["usuario"]
-        password = request.form["password"]
+        usuario_input = request.form.get("usuario")
+        password = request.form.get("password")
 
+        if not usuario_input or not password:
+            flash("Complete todos los campos")
+            return redirect(url_for("iniciar_sesion"))
+
+        # Consultar MySQL directamente
         conn = conexion()
         cursor = conn.cursor(dictionary=True)
-
-        cursor.execute("SELECT * FROM usuarios WHERE usuario=%s OR correo=%s", (usuario, usuario))
+        cursor.execute("SELECT * FROM usuarios WHERE usuario=%s OR correo=%s", (usuario_input, usuario_input))
         user = cursor.fetchone()
-
         cursor.close()
         conn.close()
 
         if user and check_password_hash(user["password"], password):
-            session["usuario"] = user["usuario"]  # Guardamos sesión
-            flash("✅ Bienvenido, " + user["usuario"], "success")
+            session["usuario"] = user["usuario"]  # coincidiendo con lo que usas en otras rutas
+            flash("Inicio de sesión exitoso")
             return redirect(url_for("inicio"))
         else:
-            flash("❌ Usuario o contraseña incorrectos.", "danger")
+            flash("Usuario o contraseña incorrecta")
             return redirect(url_for("iniciar_sesion"))
 
     return render_template("login.html")
 
+@app.route("/inventario")
+@login_required
+def inventario():
+    return render_template("inventario.html")
 
 # ---------- PÁGINA PRINCIPAL ----------
 @app.route("/inicio")
@@ -96,7 +112,7 @@ def inicio():
     if "usuario" not in session:
         flash("⚠️ Debes iniciar sesión primero.", "warning")
         return redirect(url_for("iniciar_sesion"))
-    return render_template("inicio.html", usuario=session["usuario"])
+    return render_template("index.html", usuario=session["usuario"])
 
 
 # ---------- CERRAR SESIÓN ----------
@@ -105,11 +121,19 @@ def logout():
     session.pop("usuario", None)
     flash("Has cerrado sesión.", "info")
     return redirect(url_for("iniciar_sesion"))
+
+
+
+    # GET → mostrar el formulario
+    return render_template("login.html")
+
+# ---------- Rutas de Platos ----------
 @app.route('/platos')
+@login_required
 def listar_platos():
-    conn = conexion()  # Usamos la función de tu módulo
+    conn = conexion()
     cur = conn.cursor(dictionary=True)
-    cur.execute("SELECT * FROM platos")  # O 'platos' si es tu tabla
+    cur.execute("SELECT * FROM platos")
     platos = cur.fetchall()
     cerrar_conexion(conn)
     return render_template('platos/platos.html', title='Platos', platos=platos, q='')
@@ -123,7 +147,7 @@ def buscar_platos():
         cur.execute("SELECT * FROM platos WHERE nombre LIKE %s", (f"%{q}%",))
     else:
         cur.execute("SELECT * FROM platos")
-    productos = cur.fetchall()
+    platos = cur.fetchall()
     cerrar_conexion(conn)
     return render_template('platos/platos.html', title='Buscar Platos', platos=platos, q=q)
 
@@ -131,16 +155,15 @@ def buscar_platos():
 def carta():
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM platos")  # Trae todos los platos
-    platos = cursor.fetchall()              # Guarda los resultados
+    cursor.execute("SELECT * FROM platos")
+    platos = cursor.fetchall()
     cursor.close()
     conn.close()
-    
     return render_template("carta.html", platos=platos)
 
 # ---- Productos ----
-# Listar / Buscar
 @app.route('/productos')
+@login_required
 def listar_productos():
     q = request.args.get('q', '').strip()
     conn = conexion()
@@ -151,10 +174,8 @@ def listar_productos():
         cur.execute("SELECT id, nombre, cantidad, precio FROM productos")
     productos = cur.fetchall()
     cerrar_conexion(conn)
-    # products/list.html espera: title, productos, q
     return render_template('productos/lista.html', title='Productos', productos=productos, q=q)
 
-# Crear
 @app.route('/productos/nuevo', methods=['GET', 'POST'])
 def crear_producto():
     form = ProductoForm()
@@ -170,16 +191,13 @@ def crear_producto():
             flash('Producto agregado correctamente.', 'success')
             return redirect(url_for('listar_productos'))
         except Exception as e:
-            # p.ej. nombre duplicado (UNIQUE)
             conn.rollback()
             form.nombre.errors.append('No se pudo guardar: ' + str(e))
         finally:
             cerrar_conexion(conn)
-    # products/form.html espera: title, form, modo
     return render_template('productos/form.html', title='Nuevo producto', form=form, modo='crear')
 
 
-# editar producto existente
 @app.route('/productos/<int:pid>/editar', methods=['GET', 'POST'])
 def editar_producto(pid):
     conn = conexion()
@@ -207,7 +225,7 @@ def editar_producto(pid):
             cerrar_conexion(conn)
     cerrar_conexion(conn)
     return render_template('productos/form.html', title='Editar producto', form=form, modo='editar', pid=pid)
-# eliminar producto
+
 @app.route('/productos/<int:pid>/eliminar', methods=['POST'])
 def eliminar_producto(pid):
     conn = conexion()
@@ -220,5 +238,6 @@ def eliminar_producto(pid):
         flash('Producto no encontrado.', 'warning')
     cerrar_conexion(conn)
     return redirect(url_for('listar_productos'))
+
 if __name__ == '__main__':
     app.run(debug=True)

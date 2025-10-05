@@ -93,9 +93,164 @@ body {
     background-color: rgb(253, 253, 253);
 }
 
+/* ================== FORMULARIO ================== */
 form {
-    background-color: aqua;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(12, 12, 12, 0.1);
+    background-color: #f9f9f9;
+    padding: 20px 25px;
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #333;
+    background-color: transparent;
+}
+
+form input, 
+form select, 
+form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #333;
+    background-color: #fff;
+}
+
+form input:focus, 
+form select:focus, 
+form textarea:focus {
+    outline: none;
+    border-color: #2d6cdf;
+    box-shadow: 0 0 4px rgba(45,108,223,0.4);
+}
+
+/* Botón dentro del form */
+form .btn-primary {
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Estilo para los enlaces del formulario tipo "Agregar nuevo" */
+form a, .btn-add {
+    text-decoration: none !important;
+    background-color: #17a2b8; /* celeste profesional */
+    color: #fff !important;
+    padding: 8px 14px;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-block;
+}
+
+form a:hover, .btn-add:hover {
+    background-color: #138496;
+}
+
+/* ================== BOTONES DE ACCIÓN (TABLA) ================== */
+.btn-edit {
+    background-color: #f0ad4e; /* naranja */
+    color: #fff;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.btn-edit:hover { background-color: #ec971f; }
+
+.btn-delete {
+    background-color: #d9534f; /* rojo */
+    color: #fff;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.btn-delete:hover { background-color: #c9302c; }
+
+.btn-detail {
+    background-color: #5bc0de; /* celeste */
+    color: #fff;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.btn-detail:hover { background-color: #31b0d5; }
+.form-card {
+    background-color: #f9f9f9;
+    padding: 25px 30px;
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+/* Etiquetas */
+.form-label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Campos */
+.form-input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #333;
+    background-color: #fff;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #2d6cdf;
+    box-shadow: 0 0 4px rgba(45,108,223,0.4);
+}
+
+/* Botones */
+.form-actions {
+    margin-top: 20px;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: 10px;
+    display: inline-block;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
 }
